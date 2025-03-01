@@ -11,7 +11,7 @@ import SwiftUI
 struct BlogueSwiftUIApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ChatonVue()
         }
     }
 }
