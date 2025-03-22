@@ -8,48 +8,58 @@
 import SwiftUI
 
 struct ChatonVue: View {
-    var animaux : [Animal] = [.init(nom: "Chaton", couleur: .blue, nomImage: "kitten2"), .init(nom: "Chien", couleur: .yellow, nomImage: "chien3"), .init(nom: "Hamster", couleur: .gray, nomImage: "hamster2")]
-    
+    @StateObject var viewModel = AnimalViewModel()
     
     var body: some View {
-        NavigationStack{
+        NavigationStack {
             List {
                 Section("Liste d'animaux") {
-                    ForEach(animaux, id: \.nom) {animal in
-                        NavigationLink(value: animal){
-                            HStack{
-                                Image(animal.nomImage).resizable().scaledToFit().frame(width: 50, height: 50).clipShape(.circle).overlay{
-                                    Circle().stroke(animal.couleur, lineWidth : 2)
-                                }
+                    ForEach(viewModel.animaux, id: \.id) { animal in
+                        NavigationLink(value: animal) {
+                            HStack {
+                                Image(animal.nomImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 50, height: 50)
+                                    .clipShape(Circle())
+                                    .overlay {
+                                        Circle().stroke(animal.swiftUIColor, lineWidth: 2)
+                                    }
                                 Text(animal.nom)
-                                    .offset(x: 5).foregroundColor(animal.couleur)
+                                    .offset(x: 5)
+                                    .foregroundColor(animal.swiftUIColor)
                             }
                         }
                     }
                 }
-            }.navigationTitle("Mes animaux")
-                .navigationDestination(for: Animal.self) { animal in
-                    ZStack{
-                        animal.couleur.ignoresSafeArea()
-                        HStack{
-                            Image(animal.nomImage).resizable().scaledToFit().frame(width: 100, height: 100).clipShape(.circle).overlay{
-                                Circle().stroke(.black, lineWidth : 2)
+            }
+            .navigationTitle("Mes animaux")
+            .navigationDestination(for: Animal.self) { animal in
+                ZStack {
+                    animal.swiftUIColor.ignoresSafeArea()
+                    HStack {
+                        Image(animal.nomImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100)
+                            .clipShape(Circle())
+                            .overlay {
+                                Circle().stroke(.black, lineWidth: 2)
                             }
-                            Text(animal.nom)
-                                .offset(x: 5).foregroundColor(.black).font(.largeTitle).bold()
-                        }
+                        Text(animal.nom)
+                            .offset(x: 5)
+                            .foregroundColor(.black)
+                            .font(.largeTitle)
+                            .bold()
                     }
-                    
                 }
-        }.accentColor(Color(.label))
+            }
+            .onAppear {
+                viewModel.fetchAnimals()
+            }
+        }
+        .accentColor(Color(.label))
     }
-}
-    
-    
-struct Animal : Hashable{
-    let nom: String
-    let couleur : Color
-    let nomImage : String
 }
 
 #Preview {
